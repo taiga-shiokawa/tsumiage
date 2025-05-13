@@ -57,15 +57,28 @@ export const Report = ({ showTodayOnly = false, refreshKey }: ReportProps) => {
       // 今日のタスク数 → 今日のタスクごとの作業時間
       const { data: todos, error: todoErr } = await supabase
         .from('todos')
-        .select('id, title, started_at, ended_at')
+        .select('id, title, started_at, ended_at, break_started_at, break_ended_at')
+        .eq('user_id', user.id)
         .gte('created_at', startOfToday());
       if (todoErr) console.error(todoErr);
       else {
-        type TodayTodo = { title: string; started_at: string | null; ended_at: string | null };
+        type TodayTodo = {
+          title: string;
+          started_at: string | null;
+          ended_at: string | null;
+          break_started_at?: string | null;
+          break_ended_at?: string | null;
+        };
         const arr = ((todos as TodayTodo[]) || []).map((t) => {
           let value = 0;
           if (t.started_at && t.ended_at) {
-            value = (new Date(t.ended_at).getTime() - new Date(t.started_at).getTime()) / 1000 / 60; // 分単位
+            const workMs = new Date(t.ended_at).getTime() - new Date(t.started_at).getTime();
+            let breakMs = 0;
+            if (t.break_started_at && t.break_ended_at) {
+              breakMs = new Date(t.break_ended_at).getTime() - new Date(t.break_started_at).getTime();
+              if (breakMs < 0) breakMs = 0;
+            }
+            value = (workMs - breakMs) / 1000 / 60; // 分単位
             value = Math.max(value, 0.1); // 0分は0.1分にして見えるように
           }
           return { name: t.title, value };
@@ -77,6 +90,7 @@ export const Report = ({ showTodayOnly = false, refreshKey }: ReportProps) => {
       const { data: logs, error: logErr } = await supabase
         .from('todos')
         .select('started_at, ended_at')
+        .eq('user_id', user.id)
         .gte('started_at', startOfWeek());
       if (logErr) console.error(logErr);
       else {
@@ -96,11 +110,18 @@ export const Report = ({ showTodayOnly = false, refreshKey }: ReportProps) => {
 
   const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#d0ed57', '#a4de6c'];
 
+  // 合計時間（分）を計算
+  const totalMinutes = todayData.reduce((sum, t) => sum + t.value, 0);
+
   return (
     <div className={showTodayOnly ? "" : "grid grid-cols-1 md:grid-cols-2 gap-8 p-4"}>
       {/* 今日の積み上げ */}
       <div className="border rounded p-4">
         <h3 className="text-xl font-bold mb-4">今日の積み上げ</h3>
+        {/* 合計時間表示（グラフ上部中央） */}
+        <div className="text-center text-lg font-semibold mb-2">
+          合計時間: {totalMinutes.toFixed(1)} 分
+        </div>
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie
@@ -110,7 +131,7 @@ export const Report = ({ showTodayOnly = false, refreshKey }: ReportProps) => {
               cx="50%"
               cy="50%"
               outerRadius={80}
-              label={false}
+              label={({ value }) => `${value.toFixed(1)}分`}
             >
               {todayData.map((_, idx) => (
                 <Cell key={idx} fill={COLORS[idx % COLORS.length]} />

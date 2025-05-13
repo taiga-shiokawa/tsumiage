@@ -34,7 +34,7 @@ export const Header = () => {
     <header className="w-full bg-gray-800 text-white p-4 flex justify-between items-center">
       <h1 className="text-xl font-bold">
         <Link to="/" className="hover:underline">
-          MyTodoApp
+          ツミアゲ
         </Link>
       </h1>
 
@@ -45,7 +45,7 @@ export const Header = () => {
               className="text-sm flex items-center focus:outline-none focus:ring"
               onClick={() => setDropdownOpen((prev) => !prev)}
             >
-              こんにちは、{user.email} さん
+              こんにちは、{user.email.split('@')[0]} さん
               <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
             </button>
             {dropdownOpen && (

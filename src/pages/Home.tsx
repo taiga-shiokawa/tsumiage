@@ -10,7 +10,7 @@ const Home = () => {
   return (
     <RequireAuth>
       <div>
-        <h2 className="text-2xl font-bold mb-4">ツミアゲを追加</h2>
+        <h2 className="text-2xl font-bold mb-4">タスクを追加</h2>
         <div className="flex flex-col md:flex-row gap-4 items-start">
           <div className="flex-1 w-full">
             <TodoList onChanged={handleTodoChanged} />

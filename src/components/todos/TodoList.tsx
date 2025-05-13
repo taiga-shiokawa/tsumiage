@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../libs/supabaseClient";
 import { AddTodo } from "./AddTodo";
 import { EditTodo } from "./EditTodo";
+import { FaPlay, FaEdit, FaTrash, FaStop, FaPause } from "react-icons/fa";
 
 type Todo = {
   id: string;
@@ -193,9 +194,11 @@ export const TodoList = ({ onChanged }: TodoListProps) => {
 
       <AddTodo onAdded={() => { fetchTodos(); onChanged?.(); }} />
 
+      {/* ユーザーの今日の目標を表示 */}
+      <h2 className="text-lg font-bold mb-4">今日の目標: {goalDay || "未設定"}</h2>
+
       {Object.entries(grouped).map(([goalDay, groupTodos]) => (
         <div key={goalDay} className="mb-8">
-          <h2 className="text-lg font-bold mb-2">今日の目標: {goalDay}</h2>
           <ul className="space-y-4">
             {groupTodos.slice((currentPage - 1) * todosPerPage, currentPage * todosPerPage).map((t) => (
               <li
@@ -240,7 +243,7 @@ export const TodoList = ({ onChanged }: TodoListProps) => {
                             disabled={loadingId === t.id}
                             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
                           >
-                            {loadingId === t.id ? "停止中..." : "⏹ 停止"}
+                            {loadingId === t.id ? "停止中..." : <FaStop />}
                           </button>
                           {t.break_started_at && !t.break_ended_at ? (
                             <button
@@ -248,7 +251,7 @@ export const TodoList = ({ onChanged }: TodoListProps) => {
                               disabled={loadingId === t.id}
                               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ml-2 disabled:opacity-50"
                             >
-                              {loadingId === t.id ? "休憩終了中..." : "⏸ 休憩終了"}
+                              {loadingId === t.id ? "休憩終了中..." : <FaPause />}
                             </button>
                           ) : (
                             <button
@@ -256,7 +259,7 @@ export const TodoList = ({ onChanged }: TodoListProps) => {
                               disabled={loadingId === t.id}
                               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ml-2 disabled:opacity-50"
                             >
-                              {loadingId === t.id ? "休憩中..." : "⏸ 休憩"}
+                              {loadingId === t.id ? "休憩中..." : <FaPause />}
                             </button>
                           )}
                         </>
@@ -266,21 +269,21 @@ export const TodoList = ({ onChanged }: TodoListProps) => {
                           disabled={loadingId === t.id}
                           className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50"
                         >
-                          {loadingId === t.id ? "開始中..." : "▶️ 開始"}
+                          {loadingId === t.id ? "開始中..." : <FaPlay />}
                         </button>
                       )}
                       <button
                         onClick={() => setEditingId(t.id)}
                         className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 ml-2"
                       >
-                        編集
+                        <FaEdit />
                       </button>
                       <button
                         onClick={() => handleDelete(t.id)}
                         disabled={loadingId === t.id}
                         className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 ml-2 disabled:opacity-50"
                       >
-                        削除
+                        <FaTrash />
                       </button>
                     </>
                   )}
