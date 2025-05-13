@@ -34,9 +34,17 @@ export const TodoList = () => {
   };
 
   const fetchTodos = async () => {
+    // ユーザー情報を取得
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setTodos([]);
+      return;
+    }
+    // user_idで絞り込む
     const { data, error } = await supabase
       .from("todos")
       .select("id, title, goal_week, goal_day, started_at, ended_at, report, break_started_at, break_ended_at")
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false });
     if (error) {
       console.error(error);
