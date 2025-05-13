@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { supabase } from "../../libs/supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 export const AddTodo = ({ onAdded }: { onAdded: () => void }) => {
   const [title, setTitle] = useState("");
   const [report, setReport] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleAdd = async () => {
     if (!title.trim()) return alert("タスクのタイトルを入力してください");
@@ -32,7 +34,9 @@ export const AddTodo = ({ onAdded }: { onAdded: () => void }) => {
     setLoading(false);
     if (error) {
       console.error(error);
-      return alert("タスクの登録に失敗しました");
+      alert("タスクの登録に失敗しました。ログインしてください");
+      navigate("/signin");
+      return;
     }
 
     // フォームクリア & 親で一覧再取得
