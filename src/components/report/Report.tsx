@@ -37,7 +37,12 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number | string, string
   return null;
 };
 
-export const Report = () => {
+type ReportProps = {
+  showTodayOnly?: boolean;
+  refreshKey?: number;
+};
+
+export const Report = ({ showTodayOnly = false, refreshKey }: ReportProps) => {
   const [todayData, setTodayData] = useState<{ name: string; value: number }[]>([]);
   const [weekData, setWeekData] = useState<{ name: string; value: number }[]>([]);
 
@@ -87,12 +92,12 @@ export const Report = () => {
       }
     };
     fetchReport();
-  }, []);
+  }, [refreshKey]);
 
   const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#d0ed57', '#a4de6c'];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-4">
+    <div className={showTodayOnly ? "" : "grid grid-cols-1 md:grid-cols-2 gap-8 p-4"}>
       {/* 今日の積み上げ */}
       <div className="border rounded p-4">
         <h3 className="text-xl font-bold mb-4">今日の積み上げ</h3>
@@ -116,29 +121,30 @@ export const Report = () => {
           </PieChart>
         </ResponsiveContainer>
       </div>
-
-      {/* 今週の積み上げ */}
-      <div className="border rounded p-4">
-        <h3 className="text-xl font-bold mb-4">今週の積み上げ</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={weekData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={80}
-              label={false}
-            >
-              {weekData.map((_, idx) => (
-                <Cell key={idx} fill={COLORS[0]} />
-              ))}
-            </Pie>
-            <Tooltip formatter={(value: number) => `${value} h`} />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+      {/* 今週の積み上げ（showTodayOnlyがfalseのときだけ表示） */}
+      {!showTodayOnly && (
+        <div className="border rounded p-4">
+          <h3 className="text-xl font-bold mb-4">今週の積み上げ</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={weekData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                label={false}
+              >
+                {weekData.map((_, idx) => (
+                  <Cell key={idx} fill={COLORS[0]} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value: number) => `${value} h`} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 };

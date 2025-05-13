@@ -3,8 +3,7 @@ import { supabase } from "../../libs/supabaseClient";
 
 export const AddTodo = ({ onAdded }: { onAdded: () => void }) => {
   const [title, setTitle] = useState("");
-  const [goalWeek, setGoalWeek] = useState("");
-  const [goalDay, setGoalDay] = useState("");
+  const [report, setReport] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleAdd = async () => {
@@ -25,9 +24,8 @@ export const AddTodo = ({ onAdded }: { onAdded: () => void }) => {
       {
         user_id: user.id,
         title: title.trim(),
-        goal_week: goalWeek.trim() || null,
-        goal_day: goalDay.trim() || null,
-        // started_at, ended_at, report は初期は null のまま
+        report: report.trim() || null,
+        // started_at, ended_at は初期は null のまま
       },
     ]);
 
@@ -39,8 +37,7 @@ export const AddTodo = ({ onAdded }: { onAdded: () => void }) => {
 
     // フォームクリア & 親で一覧再取得
     setTitle("");
-    setGoalWeek("");
-    setGoalDay("");
+    setReport("");
     onAdded();
   };
 
@@ -54,20 +51,11 @@ export const AddTodo = ({ onAdded }: { onAdded: () => void }) => {
         className="border p-2 w-full"
         disabled={loading}
       />
-      <input
-        type="text"
-        value={goalWeek}
-        onChange={(e) => setGoalWeek(e.target.value)}
-        placeholder="今週の目標"
-        className="border p-2 w-full"
-        disabled={loading}
-      />
-      <input
-        type="text"
-        value={goalDay}
-        onChange={(e) => setGoalDay(e.target.value)}
-        placeholder="今日の目標"
-        className="border p-2 w-full"
+      <textarea
+        value={report}
+        onChange={(e) => setReport(e.target.value)}
+        placeholder="メモ（任意）"
+        className="border p-2 w-full h-24"
         disabled={loading}
       />
       <button

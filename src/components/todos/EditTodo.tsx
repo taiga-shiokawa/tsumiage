@@ -4,7 +4,6 @@ import { supabase } from "../../libs/supabaseClient";
 export type Todo = {
   id: string;
   title: string;
-  goal_week: string | null;
   goal_day: string | null;
   report: string | null;
 };
@@ -17,7 +16,6 @@ type Props = {
 
 export const EditTodo = ({ todo, onUpdated, onCancel }: Props) => {
   const [title, setTitle] = useState(todo.title);
-  const [goalWeek, setGoalWeek] = useState(todo.goal_week || "");
   const [goalDay, setGoalDay] = useState(todo.goal_day || "");
   const [report, setReport] = useState(todo.report || "");
   const [loading, setLoading] = useState(false);
@@ -28,7 +26,6 @@ export const EditTodo = ({ todo, onUpdated, onCancel }: Props) => {
       .from("todos")
       .update({
         title: title.trim(),
-        goal_week: goalWeek.trim() || null,
         goal_day: goalDay.trim() || null,
         report: report.trim() || null,
       })
@@ -49,14 +46,6 @@ export const EditTodo = ({ todo, onUpdated, onCancel }: Props) => {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="タスクのタイトル"
-        className="border p-2 w-full"
-        disabled={loading}
-      />
-      <input
-        type="text"
-        value={goalWeek}
-        onChange={(e) => setGoalWeek(e.target.value)}
-        placeholder="今週の目標"
         className="border p-2 w-full"
         disabled={loading}
       />
