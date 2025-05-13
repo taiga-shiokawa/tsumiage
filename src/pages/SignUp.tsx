@@ -15,8 +15,8 @@ const SignUp = () => {
     if (error) {
       alert(error.message);
     } else {
-      alert("サインアップ成功！メールを確認してください！");
-      navigate("/signin");
+      // alert("サインアップ成功！メールを確認してください！");
+      navigate("/signup-message");
     }
   };
 
