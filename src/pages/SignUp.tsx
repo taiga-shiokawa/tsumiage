@@ -11,6 +11,9 @@ const SignUp = () => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: "https://app.tsumiage.workers.dev/signin"
+      }
     });
     if (error) {
       alert(error.message);
